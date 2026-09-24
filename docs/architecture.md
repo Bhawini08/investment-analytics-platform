@@ -1,9 +1,42 @@
 # Architecture
 
-The platform is split into configuration, relational persistence, input validation, repository, service, calculation, reconciliation, and presentation layers.
+The platform uses a layered architecture so persistence, validation, analytics, and presentation remain separate.
 
-SQLAlchemy defines PostgreSQL-compatible relational models while SQLite provides a zero-configuration test and demo environment. Pydantic validates incoming NAV, flow, and position payloads before persistence. Repository methods isolate SQL access, while the service layer provides application-level ingestion workflows.
+## Persistence layer
 
-Analytics functions are side-effect free and independently testable. Reconciliation compares estimated and final NAVs in basis points and flags missing records as failures. Composite uniqueness constraints protect share-class/date NAV history from duplicate records.
+SQLAlchemy models define managers, funds, share classes, NAV history, flows, positions, strategy assignments, and exposures.
 
-The Streamlit frontend reads from the same relational model rather than a separate spreadsheet export. Demo data are synthetic and deliberately separated from any proprietary investment data.
+SQLite is the default local backend for zero-configuration reproducibility. The same ORM layer is PostgreSQL-compatible through `DATABASE_URL`.
+
+## Validation layer
+
+Pydantic schemas validate incoming records before persistence. Database constraints and duplicate checks provide a second line of defense against invalid or inconsistent records.
+
+## Service and repository layer
+
+Repository objects isolate database access from analytics logic. Service functions coordinate ingestion and reconciliation workflows, including estimated versus final NAV checks.
+
+## Analytics layer
+
+Reusable functions calculate:
+
+- periodic NAV returns
+- cumulative performance
+- drawdowns
+- annualized metrics
+- flow-adjusted returns
+- manager and portfolio aggregation
+- exposure aggregation
+- contribution-style attribution
+
+## Dashboard
+
+The Streamlit interface reads from the platform output and exposes portfolio overview, performance, manager analysis, attribution, exposures, and risk views.
+
+## Validation
+
+The current demo pipeline passes six automated tests and successfully builds the synthetic database end to end. The bootstrap script creates monthly NAV records for multiple share classes through the same service layer used by the application.
+
+## Data discipline
+
+All included demo records are synthetic. The repository intentionally contains no proprietary fund, investor, or portfolio data.
