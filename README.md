@@ -25,15 +25,23 @@ A small internal-fintech style platform for ingesting investment data, storing i
 
 ## Processing
 
-- NAV reconstruction and reconciliation
+- NAV ingestion and reconciliation
 - share-class returns
 - cumulative performance
-- flows
 - portfolio and manager aggregation
 - drawdowns
 - exposure aggregation
+- attribution-style contribution analysis
 - reusable risk metrics
 - duplicate and invalid-input validation
+
+## Validation status
+
+The current demo pipeline passes **6 automated tests** and successfully builds the synthetic relational dataset end to end.
+
+The bootstrap workflow inserts monthly NAV history across multiple share classes, exercises the service/repository layer, and creates a working analytics database suitable for the Streamlit front end.
+
+All demo data are synthetic. No proprietary investment information is included.
 
 ## Quick start
 
@@ -47,6 +55,8 @@ python scripts/bootstrap_demo.py
 streamlit run dashboard/app.py
 ```
 
-By default the demo uses SQLite for zero-configuration reproducibility. Set `DATABASE_URL` to a PostgreSQL connection string for production-style deployment.
+By default the demo uses SQLite for zero-configuration reproducibility. Set `DATABASE_URL` to a PostgreSQL connection string for a production-style deployment.
 
-All demo data are synthetic and do not contain proprietary investment information.
+## Scope
+
+This project is designed as an internal investment-data and analytics platform rather than as a single standalone model. The emphasis is on reproducible ingestion, normalized data structures, validation, reconciliation, reusable analytics, and an operator-facing dashboard.
